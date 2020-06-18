@@ -47,10 +47,24 @@ export const AuthButton = styled.button`
   width: 100%;
   height: 60px;
   border-radius: 2px;
-  background-color: #8282f6;
+
+  background: linear-gradient(325.78deg, #2a8bf2 14.76%, #7cb8f7 87.3%);
+  box-shadow: 4px 6px 10px rgba(42, 139, 242, 0.15),
+    2px 2px 25px rgba(42, 139, 242, 0.05), 4px 4px 25px rgba(42, 139, 242, 0.15);
+  :hover {
+    background: linear-gradient(
+      325.78deg,
+      rgba(42, 139, 242, 0.9) 14.76%,
+      rgba(124, 184, 247, 0.9) 87.3%
+    );
+  }
   border: none;
   outline: none;
   :disabled {
-    background-color: rgba(130, 130, 246, 0.54);
+    background: linear-gradient(
+      325.78deg,
+      rgba(42, 139, 242, 0.5) 14.76%,
+      rgba(124, 184, 247, 0.5) 87.3%
+    );
   }
 `;
