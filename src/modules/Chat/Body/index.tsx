@@ -1,17 +1,30 @@
 import React from "react";
 import styled from "styled-components";
+import { observer } from "mobx-react-lite";
+import moment from "moment";
 
 import ChatHeader from "./components/Header";
 import MessagesArea from "./components/MessagesArea";
 
-function ChatBody() {
+import ChatState from "state";
+
+export default observer(function ChatBody() {
   return (
     <ChatBodyWrapper>
-      <ChatHeader userName={"Nika Jerrardo"} />
-      <MessagesArea />
+      <ChatHeader
+        userName={ChatState.currentUser?.name!}
+        usersCount={ChatState.users.length}
+      />
+      <MessagesArea
+        messages={ChatState.messages}
+        currentUserId={ChatState.currentUser?.id!}
+        sendNewMessage={(newMessage: string) =>
+          ChatState.sendMessage(newMessage, moment())
+        }
+      />
     </ChatBodyWrapper>
   );
-}
+});
 
 const ChatBodyWrapper = styled.div`
   display: flex;
@@ -25,5 +38,3 @@ const ChatBodyWrapper = styled.div`
   border-radius: 2px;
   box-shadow: 1px 18px 30px 8px rgba(0, 0, 0, 0.08);
 `;
-
-export default ChatBody;

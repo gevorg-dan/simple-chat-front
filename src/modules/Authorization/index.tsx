@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
 import {
   AuthButton,
@@ -9,8 +9,16 @@ import {
   AuthWrapper,
 } from "./styledComponents";
 
+import ChatState from "state";
+
 export default function Authorization() {
+  const history = useHistory();
   const [login, setLogin] = React.useState("");
+
+  async function authorise() {
+    ChatState.authorize(login);
+    history.replace("/chat");
+  }
 
   return (
     <AuthWrapper>
@@ -23,7 +31,9 @@ export default function Authorization() {
           placeholder="Введите ваше имя"
         />
         <Link to="/chat" style={{ width: "100%", textDecoration: "none" }}>
-          <AuthButton disabled={login === ""}>Войти</AuthButton>
+          <AuthButton disabled={login === ""} onClick={authorise}>
+            Войти
+          </AuthButton>
         </Link>
       </AuthForm>
     </AuthWrapper>

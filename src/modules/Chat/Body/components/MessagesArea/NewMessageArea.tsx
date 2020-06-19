@@ -4,25 +4,26 @@ import styled from "styled-components";
 import buttonImg from "./SendImg.svg";
 
 interface NewMessageAreaInterface {
-  message: string;
-  setMessage: (a: string) => void;
-  sendMessage: () => void;
+  sendMessage: (a: string) => void;
 }
 
-function NewMessageArea({
-  message,
-  setMessage,
-  sendMessage,
-}: NewMessageAreaInterface) {
+function NewMessageArea({ sendMessage }: NewMessageAreaInterface) {
+  const [newMessage, setNewMessage] = React.useState("");
+
+  function sendMessageHandler() {
+    sendMessage(newMessage);
+    setNewMessage("");
+  }
+
   return (
     <NewMessageAreaWrapper>
       <NewMessageInput
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
+        value={newMessage}
+        onChange={(e) => setNewMessage(e.target.value)}
         placeholder="Введите сообщение"
         rows={3}
       />
-      <SendButton>
+      <SendButton onClick={sendMessageHandler}>
         <img src={buttonImg} alt="" />
       </SendButton>
     </NewMessageAreaWrapper>
@@ -55,13 +56,15 @@ const SendButton = styled.button`
 
 const NewMessageInput = styled.textarea`
   background: none;
-  flex-grow: 1;
-  padding: 20px 40px 10px;
+  flex-grow: 0.8;
   color: rgba(112, 124, 151, 0.5);
   font-size: 1.3rem;
   border: none;
   outline: none;
   resize: none;
+  ::-webkit-scrollbar {
+    width: 3px;
+  }
   ::placeholder {
     color: rgba(112, 124, 151, 0.5);
   }
@@ -69,6 +72,8 @@ const NewMessageInput = styled.textarea`
 
 const NewMessageAreaWrapper = styled.div`
   display: flex;
+  padding: 20px 40px 10px;
+
   justify-content: space-between;
   align-items: center;
   width: calc(100% - 120px);

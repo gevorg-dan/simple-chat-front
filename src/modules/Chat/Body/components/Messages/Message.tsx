@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import { MessageInterface } from "types/Message";
+import { Message as MessageInterface } from "state";
 
 export function OwnMessage({
   text,
@@ -19,10 +19,10 @@ export function SomeoneMessage({
   text,
   date,
   author,
-}: Omit<MessageInterface, "authorId">) {
+}: Omit<MessageInterface, "id">) {
   return (
     <MessageWrapper>
-      <MessageAuthor>{author}</MessageAuthor>
+      <MessageAuthor>{author.name}</MessageAuthor>
       <Message>{text}</Message>
       <MessageDate>{date.format("DD MMM YYYY")}</MessageDate>
     </MessageWrapper>
@@ -58,8 +58,9 @@ const Message = styled.div<{ own?: boolean }>`
   font-size: 1.2rem;
   color: ${({ own }) => (own ? "#707c97" : "white")};
   align-self: ${({ own }) => (own ? "flex-end" : "flex-start")};
-  max-width: 100%;
+  max-width: 70%;
   padding: 14px 22px 17px;
+  line-height: 24px;
 
   background: ${({ own }) =>
     own ? "white" : "linear-gradient(93.27deg, #60A9F6 0%, #2A8BF2 100%)"};

@@ -83,13 +83,10 @@ td {
     display: none;
 }
 
-
 *::-webkit-scrollbar {
-    width: 6px;
-    right: 50px;
+    width: 5px;
 }
 *::-webkit-scrollbar-thumb {
     background-color: #B7BDCB;
     border-radius: 10px;
-    box-shadow: 1px 1px 50px rgba(112, 124, 151, 0.15), 2px 2px 10px rgba(112, 124, 151, 0.1), 4px 4px 15px rgba(112, 124, 151, 0.05);
 }

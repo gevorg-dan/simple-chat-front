@@ -3,14 +3,18 @@ import styled from "styled-components";
 
 interface ChatHeaderInterface {
   userName: string;
+  usersCount: number;
 }
 
-function ChatHeader({ userName }: ChatHeaderInterface) {
+function ChatHeader({ userName, usersCount }: ChatHeaderInterface) {
   return (
     <ChatHeaderWrapper>
       <UserInfoWrapper>
         <p style={{ fontSize: "1.7rem", textTransform: "capitalize" }}>
           {userName}
+        </p>
+        <p style={{ fontSize: "1.3rem", textTransform: "capitalize" }}>
+          Участников {usersCount}
         </p>
       </UserInfoWrapper>
     </ChatHeaderWrapper>
@@ -19,9 +23,11 @@ function ChatHeader({ userName }: ChatHeaderInterface) {
 
 const UserInfoWrapper = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   height: 100%;
-  justify-content: center;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 const ChatHeaderWrapper = styled.div`
@@ -31,7 +37,7 @@ const ChatHeaderWrapper = styled.div`
   width: 100%;
   height: 110px;
   background-color: #fafbff;
-  padding-left: 60px;
+  padding: 0 60px;
   border-bottom: 2px solid rgba(112, 124, 151, 0.1);
 `;
 

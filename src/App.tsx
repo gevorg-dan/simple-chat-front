@@ -1,19 +1,41 @@
 import React from "react";
-import { Router, Route, Switch, Redirect } from "react-router";
+import { Router, Route, Switch } from "react-router";
 import { createBrowserHistory } from "history";
+import { CookiesProvider, useCookies } from "react-cookie";
 
 import Authorization from "modules/Authorization";
 import Chat from "modules/Chat";
 
+import ChatState from "./state";
+
+const history = createBrowserHistory();
+
+function useInitial(): string {
+  const [cookies] = useCookies(["user"]);
+
+  if (!cookies.user) return "/login";
+
+  ChatState.authorize(cookies.user.name);
+  return "/chat";
+}
+
 function App() {
+  const rootRouteName = useInitial();
+
+  React.useEffect(() => {
+    ChatState.connectToChat();
+    history.push(rootRouteName);
+  }, []);
+
   return (
-    <Router history={createBrowserHistory()}>
-      <Switch>
-        <Redirect exact to="/chat" from="/" />
-        <Route exact path="/auth" component={Authorization} />
-        <Route exact path="/chat" component={Chat} />
-      </Switch>
-    </Router>
+    <CookiesProvider>
+      <Router history={history}>
+        <Switch>
+          <Route exact path="/login" component={Authorization} />
+          <Route exact path="/chat" component={Chat} />
+        </Switch>
+      </Router>
+    </CookiesProvider>
   );
 }
 

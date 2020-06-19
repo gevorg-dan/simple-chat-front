@@ -3,7 +3,14 @@ import styled from "styled-components";
 
 import ChatBody from "./Body";
 
+import State from "state";
+
 function Chat() {
+  React.useEffect(() => {
+    console.log(State.messages);
+    console.log(State.users);
+    console.log(State.currentUser);
+  }, []);
   return (
     <ChatWrapper>
       <ChatBody />

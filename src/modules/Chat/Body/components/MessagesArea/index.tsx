@@ -1,173 +1,37 @@
 import React from "react";
 import styled from "styled-components";
-import moment from "moment";
 
 import Messages from "../Messages";
 import NewMessageArea from "./NewMessageArea";
 
-import { MessageInterface } from "types/Message";
+import { Message } from "state";
 
-const testData: MessageInterface[] = [
-  {
-    authorId: "12312313123",
-    author: "Kirrill",
-    date: moment(),
-    text: "Привет, как дела?",
-  },
-  {
-    authorId: "2141241245125125",
-    author: "Сигизмунд",
-    date: moment(),
-    text: "Хорошо, что нового?",
-  },
-  {
-    authorId: "781265781256815",
-    author: "Антонио",
-    date: moment(),
-    text: "съел голубя",
-  },
-  {
-    authorId: "12312313123",
-    author: "Kirrill",
-    date: moment(),
-    text: "Круто! вкусно?",
-  },
-  {
-    authorId: "12312313123",
-    author: "Kirrill",
-    date: moment(),
-    text: "Привет, как дела?",
-  },
-  {
-    authorId: "2141241245125125",
-    author: "Сигизмунд",
-    date: moment(),
-    text: "Хорошо, что нового?",
-  },
-  {
-    authorId: "781265781256815",
-    author: "Антонио",
-    date: moment(),
-    text: "съел голубя",
-  },
-  {
-    authorId: "12312313123",
-    author: "Kirrill",
-    date: moment(),
-    text: "Круто! вкусно?",
-  },
-  {
-    authorId: "12312313123",
-    author: "Kirrill",
-    date: moment(),
-    text: "Привет, как дела?",
-  },
-  {
-    authorId: "2141241245125125",
-    author: "Сигизмунд",
-    date: moment(),
-    text: "Хорошо, что нового?",
-  },
-  {
-    authorId: "781265781256815",
-    author: "Антонио",
-    date: moment(),
-    text: "съел голубя",
-  },
-  {
-    authorId: "12312313123",
-    author: "Kirrill",
-    date: moment(),
-    text: "Круто! вкусно?",
-  },
-  {
-    authorId: "12312313123",
-    author: "Kirrill",
-    date: moment(),
-    text: "Привет, как дела?",
-  },
-  {
-    authorId: "2141241245125125",
-    author: "Сигизмунд",
-    date: moment(),
-    text: "Хорошо, что нового?",
-  },
-  {
-    authorId: "781265781256815",
-    author: "Антонио",
-    date: moment(),
-    text: "съел голубя",
-  },
-  {
-    authorId: "12312313123",
-    author: "Kirrill",
-    date: moment(),
-    text: "Круто! вкусно?",
-  },
-  {
-    authorId: "12312313123",
-    author: "Kirrill",
-    date: moment(),
-    text: "Привет, как дела?",
-  },
-  {
-    authorId: "2141241245125125",
-    author: "Сигизмунд",
-    date: moment(),
-    text: "Хорошо, что нового?",
-  },
-  {
-    authorId: "781265781256815",
-    author: "Антонио",
-    date: moment(),
-    text: "съел голубя",
-  },
-  {
-    authorId: "12312313123",
-    author: "Kirrill",
-    date: moment(),
-    text: "Круто! вкусно?",
-  },
-  {
-    authorId: "12312313123",
-    author: "Kirrill",
-    date: moment(),
-    text: "Привет, как дела?",
-  },
-  {
-    authorId: "2141241245125125",
-    author: "Сигизмунд",
-    date: moment(),
-    text: "Хорошо, что нового?",
-  },
-  {
-    authorId: "781265781256815",
-    author: "Антонио",
-    date: moment(),
-    text: "съел голубя",
-  },
-  {
-    authorId: "12312313123",
-    author: "Kirrill",
-    date: moment(),
-    text: "Круто! вкусно?",
-  },
-];
+interface MessagesAreaInterface {
+  messages: Message[];
+  currentUserId: string;
+  sendNewMessage: (a: string) => void;
+}
 
-function MessagesArea() {
-  const [message, setMessage] = React.useState("");
+function MessagesArea({
+  messages,
+  currentUserId,
+  sendNewMessage,
+}: MessagesAreaInterface) {
+  React.useEffect(() => {
+    console.log(123);
+    const messagesContainer = document.getElementById("messagesContainer");
+    if (!messagesContainer) return;
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }, [messages]);
+
   return (
     <>
-      <MessagesAreaWrapper>
+      <MessagesAreaWrapper id="messagesContainer">
         <MessagesAreaBody>
-          <Messages messages={testData} currentUserId={testData[0].authorId} />
+          <Messages messages={messages} currentUserId={currentUserId} />
         </MessagesAreaBody>
       </MessagesAreaWrapper>
-      <NewMessageArea
-        message={message}
-        setMessage={setMessage}
-        sendMessage={console.log}
-      />
+      <NewMessageArea sendMessage={sendNewMessage} />
     </>
   );
 }
@@ -185,8 +49,8 @@ const MessagesAreaWrapper = styled.div`
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  width: 100%;
-  padding: 30px 60px 0;
+  width: calc(100% - 120px);
+  margin: 30px 0;
   background-color: white;
   overflow-y: auto;
 `;
