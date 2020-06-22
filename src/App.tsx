@@ -24,7 +24,7 @@ function App() {
 
   React.useEffect(() => {
     ChatState.connectToChat();
-    history.push(rootRouteName);
+    // history.push(rootRouteName);
   }, []);
 
   return (

@@ -18,7 +18,6 @@ function MessagesArea({
   sendNewMessage,
 }: MessagesAreaInterface) {
   React.useEffect(() => {
-    console.log(123);
     const messagesContainer = document.getElementById("messagesContainer");
     if (!messagesContainer) return;
     messagesContainer.scrollTop = messagesContainer.scrollHeight;

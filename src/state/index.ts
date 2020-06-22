@@ -1,6 +1,5 @@
-import { Moment } from "moment";
+import moment, { Moment } from "moment";
 import io from "socket.io-client";
-import moment from "moment";
 import { action, observable } from "mobx";
 import { Cookies } from "react-cookie";
 
@@ -59,6 +58,9 @@ class ChatState {
 
   public connectToChat() {
     this.socket.on("login-success", ({ data: { user } }: any) => {
+      if (!user) {
+        throw new Error("Login failed");
+      }
       this.currentUser = new User(user.id, user.name);
       this.cookies.set("user", this.currentUser, { path: "/" });
     });
