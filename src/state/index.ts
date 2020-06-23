@@ -78,6 +78,19 @@ class ChatState {
     this.socket.on("new-message-added", ({ data: { newMessage } }: any) => {
       this.addMessage({ ...newMessage, date: moment(newMessage.date) });
     });
+
+    this.socket.on("user-disconnect", ({ data: { users } }: any) => {
+      this.users = users || [];
+    });
+
+    this.socket.on("new user connected", ({ data: { users } }: any) => {
+      this.users = users || [];
+    });
+  }
+
+  public disconnectFromChat() {
+    this.cookies.remove("user");
+    this.socket.emit("user-disconnect", this.currentUser);
   }
 
   public sendMessage(text: string, date: Moment) {

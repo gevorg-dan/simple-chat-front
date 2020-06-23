@@ -1,12 +1,15 @@
 import React from "react";
 import styled from "styled-components";
 
+import logoutImg from "./logout.svg";
+
 interface ChatHeaderInterface {
   userName: string;
   usersCount: number;
+  logout: () => void;
 }
 
-function ChatHeader({ userName, usersCount }: ChatHeaderInterface) {
+function ChatHeader({ userName, usersCount, logout }: ChatHeaderInterface) {
   return (
     <ChatHeaderWrapper>
       <UserInfoWrapper>
@@ -17,15 +20,44 @@ function ChatHeader({ userName, usersCount }: ChatHeaderInterface) {
           Участников {usersCount}
         </p>
       </UserInfoWrapper>
+      <LogoutWrapper>
+        <LogoutButton onClick={logout}>
+          <img
+            src={logoutImg}
+            alt="logout"
+            style={{ height: "23px", width: "23px" }}
+          />
+        </LogoutButton>
+      </LogoutWrapper>
     </ChatHeaderWrapper>
   );
 }
+
+const LogoutButton = styled.button`
+  will-change: transition;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0;
+  background: none;
+`;
+
+const LogoutWrapper = styled.div`
+  width: 50px;
+  height: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+`;
 
 const UserInfoWrapper = styled.div`
   display: flex;
   flex-direction: row;
   height: 100%;
-  width: 100%;
+  flex-grow: 1;
   justify-content: space-between;
   align-items: center;
 `;
