@@ -7,29 +7,29 @@ import { useHistory } from "react-router";
 import ChatHeader from "./components/Header";
 import MessagesArea from "./components/MessagesArea";
 
-import ChatState from "state";
+import State from "state";
 
 export default function ChatBody() {
   const history = useHistory();
 
   function logout() {
-    ChatState.disconnectFromChat();
+    State.disconnectFromChat();
     history.replace("/login");
   }
 
   function sendNewMessage(newMessage: string) {
-    ChatState.sendMessage(newMessage, moment());
+    State.sendMessage(newMessage, moment());
   }
   return useObserver(() => (
     <ChatBodyWrapper>
       <ChatHeader
-        userName={ChatState.currentUser?.name!}
-        usersCount={ChatState.users.length}
+        userName={State.currentUser?.name!}
+        usersCount={State.users.length}
         logout={logout}
       />
       <MessagesArea
-        messages={ChatState.messages}
-        currentUserId={ChatState.currentUser?.id!}
+        messages={State.messages}
+        currentUserId={State.currentUser?.id!}
         sendNewMessage={sendNewMessage}
       />
     </ChatBodyWrapper>

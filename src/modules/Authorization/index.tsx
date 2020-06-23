@@ -9,14 +9,14 @@ import {
   AuthWrapper,
 } from "./styledComponents";
 
-import ChatState from "state";
+import State from "state";
 
 export default function Authorization() {
   const history = useHistory();
   const [login, setLogin] = React.useState("");
 
   async function authorise() {
-    ChatState.authorize(login);
+    State.authorize(login);
     history.replace("/chat");
   }
 

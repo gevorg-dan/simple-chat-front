@@ -27,7 +27,7 @@ export class Message {
   }
 }
 
-class ChatState {
+class State {
   cookies = new Cookies();
 
   currentUser: User | undefined;
@@ -57,6 +57,20 @@ class ChatState {
   }
 
   public connectToChat() {
+    this.socket.on("error", () => {});
+
+    this.socket.on("sign-up-failed", () => {});
+    this.socket.on("sign-up-success", () => {});
+
+    this.socket.on("sign-in-failed", () => {});
+    this.socket.on("sign-in-success", () => {});
+    this.socket.on("user-joined", () => {});
+
+    this.socket.on("send-message-failed", () => {});
+    this.socket.on("send-message-success", () => {});
+
+    this.socket.on("successful-chat-connection", () => {});
+
     this.socket.on("login-success", ({ data: { user } }: any) => {
       if (!user) {
         throw new Error("Login failed");
@@ -108,4 +122,4 @@ class ChatState {
   }
 }
 
-export default new ChatState();
+export default new State();

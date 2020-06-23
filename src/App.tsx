@@ -6,7 +6,7 @@ import { CookiesProvider, useCookies } from "react-cookie";
 import Authorization from "modules/Authorization";
 import Chat from "modules/Chat";
 
-import ChatState from "./state";
+import State from "./state";
 
 const history = createBrowserHistory();
 
@@ -15,7 +15,7 @@ function useInitial(): string {
 
   if (!cookies.user) return "/login";
 
-  ChatState.authorize(cookies.user.name);
+  State.authorize(cookies.user.name);
   return "/chat";
 }
 
@@ -23,7 +23,7 @@ function App() {
   const rootRouteName = useInitial();
 
   React.useEffect(() => {
-    ChatState.connectToChat();
+    State.connectToChat();
     history.push(rootRouteName);
   }, []);
 
