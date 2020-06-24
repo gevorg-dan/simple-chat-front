@@ -1,38 +1,39 @@
 import React from "react";
-import { Router, Route, Switch } from "react-router";
+import { Router, Route, Switch, Redirect } from "react-router";
 import { createBrowserHistory } from "history";
-import { CookiesProvider, useCookies } from "react-cookie";
+import { CookiesProvider } from "react-cookie";
 
-import Authorization from "modules/Authorization";
-import Chat from "modules/Chat";
+import SignInComponent from "modules/Authorization/SignIn";
+import SignUpComponent from "modules/Authorization/SignUp";
+import ChatComponent from "modules/Chat";
+
+import { useEventEmitter } from "./lib/events";
+import globalEventBus from "./lib/globalEventBus";
+import { useInitial } from "./lib/hooks";
 
 import State from "./state";
 
 const history = createBrowserHistory();
 
-function useInitial(): string {
-  const [cookies] = useCookies(["user"]);
-
-  if (!cookies.user) return "/login";
-
-  State.authorize(cookies.user.name);
-  return "/chat";
-}
-
 function App() {
   const rootRouteName = useInitial();
+
+  useEventEmitter(globalEventBus, "SIGN_IN_SUCCESS", () =>
+    history.replace("/chat")
+  );
 
   React.useEffect(() => {
     State.connectToChat();
     history.push(rootRouteName);
   }, []);
-
+  console.log("app");
   return (
     <CookiesProvider>
       <Router history={history}>
         <Switch>
-          <Route exact path="/login" component={Authorization} />
-          <Route exact path="/chat" component={Chat} />
+          <Route exact path="/sign-in" component={SignInComponent} />
+          <Route exact path="/sign-up" component={SignUpComponent} />
+          <Route exact path="/chat" component={ChatComponent} />
         </Switch>
       </Router>
     </CookiesProvider>

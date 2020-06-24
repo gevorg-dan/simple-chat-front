@@ -14,7 +14,7 @@ export default function ChatBody() {
 
   function logout() {
     State.disconnectFromChat();
-    history.replace("/login");
+    history.replace("/sign-in");
   }
 
   function sendNewMessage(newMessage: string) {

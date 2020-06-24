@@ -1,7 +1,9 @@
-import moment, { Moment } from "moment";
 import io from "socket.io-client";
-import { action, observable } from "mobx";
 import { Cookies } from "react-cookie";
+import moment, { Moment } from "moment";
+import { action, observable } from "mobx";
+
+import globalEventBus from "../lib/globalEventBus";
 
 export class User {
   id: string;
@@ -36,6 +38,10 @@ class State {
 
   private socket = io.connect("http://localhost:3333");
 
+  private setCurrentUser(user: User) {
+    this.currentUser = user;
+  }
+
   @action
   private setMessages(messages: Message[]) {
     this.messages = messages;
@@ -48,7 +54,7 @@ class State {
 
   @action
   private addMessage(message: Message) {
-    this.messages = [...this.messages, message];
+    this.messages = [...this.messages, { ...message }];
   }
 
   @action
@@ -56,69 +62,104 @@ class State {
     this.users = [...this.users, user];
   }
 
-  public connectToChat() {
-    this.socket.on("error", () => {});
-
-    this.socket.on("sign-up-failed", () => {});
-    this.socket.on("sign-up-success", () => {});
-
-    this.socket.on("sign-in-failed", () => {});
-    this.socket.on("sign-in-success", () => {});
-    this.socket.on("user-joined", () => {});
-
-    this.socket.on("send-message-failed", () => {});
-    this.socket.on("send-message-success", () => {});
-
-    this.socket.on("successful-chat-connection", () => {});
-
-    this.socket.on("login-success", ({ data: { user } }: any) => {
-      if (!user) {
-        throw new Error("Login failed");
-      }
-      this.currentUser = new User(user.id, user.name);
-      this.cookies.set("user", this.currentUser, { path: "/" });
-    });
-
-    this.socket.on("start", ({ data }: any) => {
-      this.setMessages(
-        data.messages.map((message: any) => ({
-          ...message,
-          date: moment(message.date),
-        }))
-      );
-      this.setUsers(data.users);
-    });
-
-    this.socket.on("new-message-added", ({ data: { newMessage } }: any) => {
-      this.addMessage({ ...newMessage, date: moment(newMessage.date) });
-    });
-
-    this.socket.on("user-disconnect", ({ data: { users } }: any) => {
-      this.users = users || [];
-    });
-
-    this.socket.on("new user connected", ({ data: { users } }: any) => {
-      this.users = users || [];
-    });
+  getUserById(id: string) {
+    return this.users.find((user) => user.id === id);
   }
 
-  public disconnectFromChat() {
-    this.cookies.remove("user");
-    this.socket.emit("user-disconnect", this.currentUser);
+  public connectToChat() {
+    this.socket.on("error", ({ message }: any) => {
+      console.log(message);
+    });
+    this.socket.on("sign-up-failed", () => {
+      globalEventBus.emit("SIGN_UP_FAILED", true);
+    });
+    this.socket.on("sign-in-failed", () => {
+      globalEventBus.emit("SIGN_IN_FAILED", true);
+    });
+    this.socket.on("send-message-failed", () => {
+      globalEventBus.emit("SEND_MESSAGE_FAILED", true);
+    });
+
+    this.socket.on(
+      "sign-up-success",
+      ({ newUser: { login, password } }: any) => {
+        this.cookies.set("login", login, { path: "/" });
+        this.cookies.set("password", password, { path: "/" });
+        this.signIn(login, password);
+      }
+    );
+
+    this.socket.on("sign-in-success", ({ user }: any) => {
+      if (!user) {
+        throw new Error("Sign-in failed");
+      }
+      this.cookies.set("login", user.login, { path: "/" });
+      this.cookies.set("password", user.password, { path: "/" });
+      this.setCurrentUser(new User(user._id, user.login));
+
+      globalEventBus.emit("SIGN_IN_SUCCESS", true);
+      this.socket.emit("connect-to-chat");
+    });
+
+    this.socket.on("user-joined", ({ user }: any) => {
+      if (!user) {
+        throw new Error("Sign-in failed");
+      }
+      this.users.push(new User(user._id, user.login));
+    });
+
+    this.socket.on("send-message-success", ({ data: { message } }: any) => {
+      const newMessage = new Message(
+        message._id,
+        message.text,
+        this.getUserById(message.authorId)!,
+        moment(message.date)
+      );
+      this.addMessage(newMessage);
+    });
+
+    this.socket.on("successful-chat-connection", ({ data }: any) => {
+      this.setUsers(
+        data.users.map((user: any) => new User(user._id, user.login))
+      );
+      this.setMessages(
+        data.messages.map(
+          (message: any) =>
+            new Message(
+              message._id,
+              message.text,
+              this.getUserById(message.authorId)!,
+              moment(message.date)
+            )
+        )
+      );
+    });
   }
 
   public sendMessage(text: string, date: Moment) {
-    this.socket.emit("new-message", {
+    if (!this.currentUser) return;
+    this.socket.emit("send-message", {
       text,
       date: date.format(),
-      authorId: this.currentUser?.id,
+      authorId: this.currentUser.id,
     });
   }
 
-  public authorize(login: string) {
-    const cookieUser = this.cookies.get("user");
-    const user = cookieUser ? { id: cookieUser.id } : { name: login };
-    this.socket.emit("login", user);
+  public signUp(login: string, password: string) {
+    this.socket.emit("sign-up", { login, password });
+  }
+  public signIn(login: string, password: string) {
+    const cookieLogin = this.cookies.get("login");
+    const cookiePassword = this.cookies.get("password");
+    const signInData =
+      cookieLogin && cookiePassword
+        ? { login: cookieLogin, password: cookiePassword }
+        : { login, password };
+    this.socket.emit("sign-in", signInData);
+  }
+  public disconnectFromChat() {
+    this.cookies.remove("login");
+    this.cookies.remove("password");
   }
 }
 

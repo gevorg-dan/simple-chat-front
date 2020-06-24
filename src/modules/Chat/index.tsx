@@ -4,13 +4,14 @@ import styled from "styled-components";
 import ChatBody from "./Body";
 
 import State from "state";
+import { toJS } from "mobx";
 
 function Chat() {
   React.useEffect(() => {
-    console.log(State.messages);
-    console.log(State.users);
+    console.log(toJS(State.messages));
+    console.log(toJS(State.users));
     console.log(State.currentUser);
-  }, []);
+  }, [State]);
   return (
     <ChatWrapper>
       <ChatBody />
