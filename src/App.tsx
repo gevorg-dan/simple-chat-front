@@ -1,5 +1,5 @@
 import React from "react";
-import { Router, Route, Switch, Redirect } from "react-router";
+import { Router, Route, Switch } from "react-router";
 import { createBrowserHistory } from "history";
 import { CookiesProvider } from "react-cookie";
 
@@ -9,24 +9,23 @@ import ChatComponent from "modules/Chat";
 
 import { useEventEmitter } from "./lib/events";
 import globalEventBus from "./lib/globalEventBus";
-import { useInitial } from "./lib/hooks";
 
 import State from "./state";
 
 const history = createBrowserHistory();
 
 function App() {
-  const rootRouteName = useInitial();
-
   useEventEmitter(globalEventBus, "SIGN_IN_SUCCESS", () =>
     history.replace("/chat")
   );
 
   React.useEffect(() => {
+    if (State.currentUser === null) {
+      history.replace("/sign-in");
+    }
     State.connectToChat();
-    history.push(rootRouteName);
   }, []);
-  console.log("app");
+
   return (
     <CookiesProvider>
       <Router history={history}>

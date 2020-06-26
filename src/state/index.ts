@@ -1,5 +1,4 @@
 import io from "socket.io-client";
-import { Cookies } from "react-cookie";
 import moment, { Moment } from "moment";
 import { action, observable } from "mobx";
 
@@ -30,8 +29,6 @@ export class Message {
 }
 
 class State {
-  cookies = new Cookies();
-
   currentUser: User | undefined;
   @observable messages: Message[] = [];
   @observable users: User[] = [];
@@ -83,8 +80,6 @@ class State {
     this.socket.on(
       "sign-up-success",
       ({ newUser: { login, password } }: any) => {
-        this.cookies.set("login", login, { path: "/" });
-        this.cookies.set("password", password, { path: "/" });
         this.signIn(login, password);
       }
     );
@@ -93,8 +88,6 @@ class State {
       if (!user) {
         throw new Error("Sign-in failed");
       }
-      this.cookies.set("login", user.login, { path: "/" });
-      this.cookies.set("password", user.password, { path: "/" });
       this.setCurrentUser(new User(user._id, user.login));
 
       globalEventBus.emit("SIGN_IN_SUCCESS", true);
@@ -105,6 +98,7 @@ class State {
       if (!user) {
         throw new Error("Sign-in failed");
       }
+      if (this.users.find(({ id }) => id === user._id)) return;
       this.users.push(new User(user._id, user.login));
     });
 
@@ -149,17 +143,10 @@ class State {
     this.socket.emit("sign-up", { login, password });
   }
   public signIn(login: string, password: string) {
-    const cookieLogin = this.cookies.get("login");
-    const cookiePassword = this.cookies.get("password");
-    const signInData =
-      cookieLogin && cookiePassword
-        ? { login: cookieLogin, password: cookiePassword }
-        : { login, password };
-    this.socket.emit("sign-in", signInData);
+    this.socket.emit("sign-in", { login, password });
   }
   public disconnectFromChat() {
-    this.cookies.remove("login");
-    this.cookies.remove("password");
+    this.socket.emit("logout");
   }
 }
 
