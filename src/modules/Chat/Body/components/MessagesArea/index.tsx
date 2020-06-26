@@ -27,7 +27,9 @@ function MessagesArea({
     <>
       <MessagesAreaWrapper id="messagesContainer">
         <MessagesAreaBody>
-          <Messages messages={messages} currentUserId={currentUserId} />
+          {messages && (
+            <Messages messages={messages} currentUserId={currentUserId} />
+          )}
         </MessagesAreaBody>
       </MessagesAreaWrapper>
       <NewMessageArea sendMessage={sendNewMessage} />

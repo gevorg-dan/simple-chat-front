@@ -20,7 +20,7 @@ function App() {
   );
 
   React.useEffect(() => {
-    if (State.currentUser === null) {
+    if (!State.currentUser) {
       history.replace("/sign-in");
     }
     State.connectToChat();

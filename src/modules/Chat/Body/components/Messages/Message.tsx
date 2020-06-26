@@ -1,30 +1,37 @@
 import React from "react";
 import styled from "styled-components";
 
-import { Message as MessageInterface } from "state";
+import { Message as MessageInterface, User } from "state";
+import { Moment } from "moment";
 
-export function OwnMessage({
-  text,
-  date,
-}: Pick<MessageInterface, "text" | "date">) {
-  return (
-    <MessageWrapper own>
-      <Message own>{text}</Message>
-      <MessageDate own>{date.format("DD MMM YYYY")}</MessageDate>
-    </MessageWrapper>
-  );
-}
-
-export function SomeoneMessage({
+export function MessageComponent({
   text,
   date,
   author,
-}: Omit<MessageInterface, "id">) {
+  reply,
+  currentUserId,
+}: {
+  currentUserId: string;
+  text: string;
+  date: Moment;
+  author: User;
+  reply?: MessageInterface;
+}) {
+  const isOwn = currentUserId === author.id;
   return (
-    <MessageWrapper>
-      <MessageAuthor>{author.name}</MessageAuthor>
-      <Message>{text}</Message>
-      <MessageDate>{date.format("DD MMM YYYY")}</MessageDate>
+    <MessageWrapper own={isOwn}>
+      {!isOwn && <MessageAuthor>{author.name}</MessageAuthor>}
+      <Message own={isOwn}>{text}</Message>
+      <MessageDate own={isOwn}>{date.format("DD MMM YYYY")}</MessageDate>
+      {reply && (
+        <MessageComponent
+          text={reply.text}
+          date={reply.date}
+          author={reply.author}
+          reply={reply.reply}
+          currentUserId={currentUserId}
+        />
+      )}
     </MessageWrapper>
   );
 }

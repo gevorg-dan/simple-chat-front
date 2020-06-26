@@ -19,12 +19,20 @@ export class Message {
   text: string;
   author: User;
   date: Moment;
+  reply?: Message;
 
-  constructor(id: string, text: string, author: User, date: Moment) {
+  constructor(
+    id: string,
+    text: string,
+    author: User,
+    date: Moment,
+    reply?: Message
+  ) {
     this.id = id;
     this.text = text;
     this.author = author;
     this.date = date;
+    this.reply = reply!;
   }
 }
 
@@ -88,7 +96,7 @@ class State {
       if (!user) {
         throw new Error("Sign-in failed");
       }
-      this.setCurrentUser(new User(user._id, user.login));
+      this.setCurrentUser(new User(user.id, user.login));
 
       globalEventBus.emit("SIGN_IN_SUCCESS", true);
       this.socket.emit("connect-to-chat");
@@ -98,44 +106,48 @@ class State {
       if (!user) {
         throw new Error("Sign-in failed");
       }
-      if (this.users.find(({ id }) => id === user._id)) return;
-      this.users.push(new User(user._id, user.login));
+      if (this.users.find(({ id }) => id === user.id)) return;
+      this.users.push(new User(user.id, user.login));
     });
 
     this.socket.on("send-message-success", ({ data: { message } }: any) => {
       const newMessage = new Message(
-        message._id,
+        message.id,
         message.text,
-        this.getUserById(message.authorId)!,
-        moment(message.date)
+        this.getUserById(message.author)!,
+        moment(message.date),
+        message.reply
       );
       this.addMessage(newMessage);
     });
 
     this.socket.on("successful-chat-connection", ({ data }: any) => {
+      console.log(data);
       this.setUsers(
-        data.users.map((user: any) => new User(user._id, user.login))
+        data.users.map((user: any) => new User(user.id, user.login))
       );
       this.setMessages(
         data.messages.map(
           (message: any) =>
             new Message(
-              message._id,
+              message.id,
               message.text,
-              this.getUserById(message.authorId)!,
-              moment(message.date)
+              this.getUserById(message.author)!,
+              moment(message.date),
+              message.reply
             )
         )
       );
     });
   }
 
-  public sendMessage(text: string, date: Moment) {
+  public sendMessage(text: string, date: Moment, reply?: Message) {
     if (!this.currentUser) return;
     this.socket.emit("send-message", {
       text,
       date: date.format(),
-      authorId: this.currentUser.id,
+      author: this.currentUser.id,
+      reply,
     });
   }
 
