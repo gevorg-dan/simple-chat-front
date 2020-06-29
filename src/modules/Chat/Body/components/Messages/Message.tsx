@@ -24,7 +24,7 @@ export function MessageComponent({
   isOwn: isOwnProp,
   withoutAuthor,
 }: {
-  currentUserId: string;
+  currentUserId?: string;
   text: string;
   date: Moment;
   author: User;
@@ -47,7 +47,6 @@ export function MessageComponent({
             date={moment(reply.date)}
             author={replyAuthor!}
             reply={reply.reply}
-            currentUserId={currentUserId}
             actions={[]}
             isReply={true}
             isOwn={isOwn}
