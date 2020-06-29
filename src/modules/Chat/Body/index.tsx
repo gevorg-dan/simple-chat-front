@@ -30,6 +30,7 @@ export default function ChatBody() {
       <MessagesArea
         messages={State.messages}
         currentUserId={State.currentUser?.id!}
+        messageForReply={State.messageForReply}
         sendNewMessage={sendNewMessage}
       />
     </ChatBodyWrapper>

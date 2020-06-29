@@ -1,32 +1,49 @@
 import React from "react";
 import styled from "styled-components";
 
+import State, { Message } from "state";
+
 import buttonImg from "./SendImg.svg";
 
 interface NewMessageAreaInterface {
+  messageForReply: Message | null;
   sendMessage: (a: string) => void;
 }
 
-function NewMessageArea({ sendMessage }: NewMessageAreaInterface) {
-  const [newMessage, setNewMessage] = React.useState("");
+function NewMessageArea({
+  messageForReply,
+  sendMessage,
+}: NewMessageAreaInterface) {
+  const [newMessageText, setNewMessageText] = React.useState("");
+  const author = State.getUserById(messageForReply?.author!);
 
   function sendMessageHandler() {
-    sendMessage(newMessage);
-    setNewMessage("");
+    sendMessage(newMessageText);
+    setNewMessageText("");
   }
 
   return (
-    <NewMessageAreaWrapper>
-      <NewMessageInput
-        value={newMessage}
-        onChange={(e) => setNewMessage(e.target.value)}
-        placeholder="Введите сообщение"
-        rows={3}
-      />
-      <SendButton onClick={sendMessageHandler}>
-        <img src={buttonImg} alt="" />
-      </SendButton>
-    </NewMessageAreaWrapper>
+    <>
+      <ReplayMessageAreaWrapper>
+        {messageForReply && (
+          <ReplayMessage>
+            <span>{author?.name}</span>
+            <p>{messageForReply.text}</p>
+          </ReplayMessage>
+        )}
+      </ReplayMessageAreaWrapper>
+      <NewMessageAreaWrapper>
+        <NewMessageInput
+          value={newMessageText}
+          onChange={(e) => setNewMessageText(e.target.value)}
+          placeholder="Введите сообщение"
+          rows={3}
+        />
+        <SendButton onClick={sendMessageHandler}>
+          <img src={buttonImg} alt="" />
+        </SendButton>
+      </NewMessageAreaWrapper>
+    </>
   );
 }
 
@@ -78,6 +95,32 @@ const NewMessageAreaWrapper = styled.div`
   align-items: center;
   width: calc(100% - 120px);
   border-top: 2px solid rgba(112, 124, 151, 0.1);
+`;
+
+const ReplayMessageAreaWrapper = styled.div`
+  height: 100px;
+  padding: 10px 0;
+  width: calc(100% - 120px);
+`;
+
+const ReplayMessage = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  font-size: 0.9rem;
+  width: 100%;
+  height: 50px;
+  border-left: 3px solid #707c97;
+  padding-left: 10px;
+  color: #707c97;
+
+  > span {
+    font-size: 0.8rem;
+    margin-bottom: 5px;
+    text-transform: capitalize;
+    color: #737373;
+  }
 `;
 
 export default NewMessageArea;

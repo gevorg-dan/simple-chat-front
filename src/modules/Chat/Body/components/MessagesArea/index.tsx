@@ -9,12 +9,14 @@ import { Message } from "state";
 interface MessagesAreaInterface {
   messages: Message[];
   currentUserId: string;
+  messageForReply: Message | null;
   sendNewMessage: (a: string) => void;
 }
 
 function MessagesArea({
   messages,
   currentUserId,
+  messageForReply,
   sendNewMessage,
 }: MessagesAreaInterface) {
   React.useEffect(() => {
@@ -32,7 +34,10 @@ function MessagesArea({
           )}
         </MessagesAreaBody>
       </MessagesAreaWrapper>
-      <NewMessageArea sendMessage={sendNewMessage} />
+      <NewMessageArea
+        messageForReply={messageForReply}
+        sendMessage={sendNewMessage}
+      />
     </>
   );
 }
@@ -51,7 +56,7 @@ const MessagesAreaWrapper = styled.div`
   flex-direction: column;
   flex-grow: 1;
   width: calc(100% - 120px);
-  margin: 30px 0;
+  margin: 30px 0 0;
   background-color: white;
   overflow-y: auto;
 `;

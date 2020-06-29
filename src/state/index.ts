@@ -1,5 +1,5 @@
 import io from "socket.io-client";
-import moment, { Moment } from "moment";
+import { Moment } from "moment";
 import { action, observable } from "mobx";
 
 import globalEventBus from "../lib/globalEventBus";
@@ -17,15 +17,15 @@ export class User {
 export class Message {
   id: string;
   text: string;
-  author: User;
-  date: Moment;
+  author: string;
+  date: string;
   reply?: Message;
 
   constructor(
     id: string,
     text: string,
-    author: User,
-    date: Moment,
+    author: string,
+    date: string,
     reply?: Message
   ) {
     this.id = id;
@@ -38,6 +38,7 @@ export class Message {
 
 class State {
   currentUser: User | undefined;
+  @observable messageForReply: Message | null = null;
   @observable messages: Message[] = [];
   @observable users: User[] = [];
 
@@ -69,6 +70,11 @@ class State {
 
   getUserById(id: string) {
     return this.users.find((user) => user.id === id);
+  }
+
+  @action
+  setMessageForReply(message?: Message) {
+    this.messageForReply = message || null;
   }
 
   public connectToChat() {
@@ -111,11 +117,12 @@ class State {
     });
 
     this.socket.on("send-message-success", ({ data: { message } }: any) => {
+      this.setMessageForReply();
       const newMessage = new Message(
         message.id,
         message.text,
-        this.getUserById(message.author)!,
-        moment(message.date),
+        this.getUserById(message.author)?.id!,
+        message.date,
         message.reply
       );
       this.addMessage(newMessage);
@@ -132,8 +139,8 @@ class State {
             new Message(
               message.id,
               message.text,
-              this.getUserById(message.author)!,
-              moment(message.date),
+              this.getUserById(message.author)?.id!,
+              message.date,
               message.reply
             )
         )
@@ -141,13 +148,14 @@ class State {
     });
   }
 
-  public sendMessage(text: string, date: Moment, reply?: Message) {
+  public sendMessage(text: string, date: Moment) {
     if (!this.currentUser) return;
+    console.log(this.messageForReply);
     this.socket.emit("send-message", {
       text,
       date: date.format(),
       author: this.currentUser.id,
-      reply,
+      reply: this.messageForReply,
     });
   }
 

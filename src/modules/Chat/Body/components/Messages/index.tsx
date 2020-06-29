@@ -1,9 +1,10 @@
 import React from "react";
+import moment from "moment";
 import { observer } from "mobx-react-lite";
 
 import { MessageComponent } from "./Message";
 
-import { Message } from "state";
+import State, { Message } from "state";
 
 export default observer(function ({
   messages,
@@ -12,18 +13,24 @@ export default observer(function ({
   messages: Message[];
   currentUserId: string;
 }) {
-  console.log(messages);
   return (
     <>
-      {messages.map(({ author, text, date, reply }, index) => {
+      {messages.map((message, index) => {
+        const author = State.getUserById(message.author)!;
         return (
           <MessageComponent
             key={index}
             author={author}
-            text={text}
-            date={date}
-            reply={reply}
+            text={message.text}
+            date={moment(message.date)}
+            reply={message.reply}
             currentUserId={currentUserId}
+            actions={[
+              {
+                action: "ответить",
+                onClick: () => State.setMessageForReply({...message, author: message.author}),
+              },
+            ]}
           />
         );
       })}
