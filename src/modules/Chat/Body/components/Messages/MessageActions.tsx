@@ -6,18 +6,20 @@ import { MessageActionInterface } from "./Message";
 interface MessageActionsInterface {
   children: React.ReactNode;
   actions: MessageActionInterface[];
+  isOwn?: boolean;
 }
 
 export default function MessageActions({
   children,
   actions,
+  isOwn,
 }: MessageActionsInterface) {
   return (
     <>
       <MessageActionsTooltip>
         {actions &&
           actions.map(({ action, onClick }, index) => (
-            <ActionElement key={index} onClick={onClick}>
+            <ActionElement own={isOwn} key={index} onClick={onClick}>
               {action}
             </ActionElement>
           ))}
@@ -38,12 +40,12 @@ export const MessageActionsTooltip = styled.div`
   justify-content: center;
   align-items: center;
   max-width: 300px;
-  padding: 5px 7px;
+  padding: 10px 15px;
   border-top-right-radius: 8px;
 `;
 
-const ActionElement = styled.span`
+const ActionElement = styled.span<{ own?: boolean }>`
   font-size: 0.8rem;
   font-weight: bold;
-  color: rgba(88, 88, 88, 0.8);
+  color: ${({ own }) => (own ? "rgba(88, 88, 88, 0.8)" : "white")};
 `;

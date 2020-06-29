@@ -54,7 +54,7 @@ export function MessageComponent({
             withoutAuthor={author.id === reply.author}
           />
         )}
-        <MessageActions actions={actions}>
+        <MessageActions actions={actions} isOwn={isOwn}>
           {isReply && !withoutAuthor && (
             <ReplyMessageAuthor own={isOwn}>{author.name}</ReplyMessageAuthor>
           )}
@@ -108,7 +108,7 @@ const Message = styled.div<{ own?: boolean }>`
   color: ${({ own }) => (own ? "#707c97" : "white")};
   align-self: ${({ own }) => (own ? "flex-end" : "flex-start")};
   max-width: 70%;
-  padding: 17px 22px;
+  padding: 25px 22px 15px;
   line-height: 24px;
   :hover {
     > div {
@@ -134,6 +134,6 @@ const ReplyMessage = styled.div<{ own?: boolean }>`
   align-self: ${({ own }) => (own ? "flex-end" : "flex-start")};
   width: 100%;
   margin-bottom: 15px;
-  border-left: 3px solid ${({ own }) => (own ? "#707c97" : "white")};
+  border-left: 2px solid ${({ own }) => (own ? "#707c97" : "white")};
   padding: 0 7px 3px;
 `;
